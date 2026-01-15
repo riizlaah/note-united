@@ -1,3 +1,9 @@
+<?php
+require 'config.php';
+
+if(!check_login()) exit;
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -24,12 +30,12 @@
     </div>
 
     <!-- // form section -->
-    <form action="./main.php" method="post" class="flex flex-col gap-4 mt-6">
+    <form action="./action-create-note.php" method="post" class="flex flex-col gap-4 mt-6">
       <div class="flex flex-col gap-2">
-        <input type="text" name="judul-catatan" id="judul-catatan" class="p-2 py-3 text-lg bg-[#f8fafc] rounded border border-[#9DABBE]" placeholder="Title">
+        <input type="text" name="title" id="title" class="p-2 py-3 text-lg bg-[#f8fafc] rounded border border-[#9DABBE]" placeholder="Title">
       </div>
       <div class="flex flex-col gap-2">
-        <textarea class="p-2 py-3 text-lg bg-[#f8fafc] rounded border border-[#9DABBE]" rows="10" placeholder="Write some ideas here"></textarea>
+        <textarea name="content" class="p-2 py-3 text-lg bg-[#f8fafc] rounded border border-[#9DABBE]" rows="10" placeholder="Write some ideas here"></textarea>
       </div>
 
       <div class="flex gap-4">

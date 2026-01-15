@@ -1,6 +1,24 @@
+<?php
+require 'config.php';
+
+if(!check_login()) exit;
+
+if(!isset($_GET['id'])) return abort();
+
+$id = escape($_GET['id']);
+$data = $conn->query("SELECT * FROM `notes` WHERE `id`='$id'")->fetch_assoc();
+
+if(is_null($data)) {
+  redirect('main.php');
+}
+
+if(!is_authorized($data['user_id'])) return abort(403);
+
+$created_at = date_create($data['created_at'])->format("d F Y");
+
+?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,16 +41,16 @@
     </div>
 
     <!-- // form section -->
-    <form action="./main.php" method="post" class="flex flex-col gap-4 mt-6">
-      
+    <form action="./action-update-note.php" method="post" class="flex flex-col gap-4 mt-6">
+      <input type="hidden" name="id" value="<?= $data['id'] ?>">
       <div class="flex flex-col gap-2">
-        <input type="text" name="judul-catatan" id="judul-catatan" class="p-3 text-lg bg-[#f8fafc] rounded border border-[#9DABBE]" placeholder="Title">
+        <input type="text" name="title" value="<?= $data['title'] ?>" id="title" class="p-3 text-lg bg-[#f8fafc] rounded border border-[#9DABBE]" placeholder="Title">
       </div>
       <div class="flex flex-col gap-2">
-        <textarea class="p-3 text-lg bg-[#f8fafc] rounded border border-[#9DABBE]" rows="10" placeholder="Write some ideas here"></textarea>
+        <textarea name="content" class="p-3 text-lg bg-[#f8fafc] rounded border border-[#9DABBE]" rows="10" placeholder="Write some ideas here"><?= $data['content'] ?></textarea>
       </div>
       <div class="flex flex-col gap-2">
-        <input type="text" name="judul-catatan" id="judul-catatan" readonly class="p-3 text-lg bg-[#f8fafc] rounded border border-[#9DABBE] text-[#9DABBE]" value="<?php echo date('d F Y') ?>">
+        <input type="text" name="created_at" id="created_at" readonly class="p-3 text-lg bg-[#f8fafc] rounded border border-[#9DABBE] text-[#9DABBE]" value="<?= $created_at ?>">
       </div>
       <div class="flex gap-4">
         <a href="./main.php" type="submit" class="text-center text-[#7C3AED] font-bold p-3 mt-4 hover:bg-[#6b21a8] transition w-full">Cancel</a>

@@ -1,6 +1,12 @@
+<?php
+require 'config.php';
+
+if(!check_login()) exit;
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,10 +29,10 @@
     </div>
 
     <!-- // form search section -->
-    <form action="./index.php" method="post" class="flex flex-col gap-4 mt-6">
+    <form action="" method="post" class="flex flex-col gap-4 mt-6">
       <div class="flex flex-col gap-2 relative">
-        <label for="fullname" class="absolute flex top-2 left-3 text-[#9DABBE]"><i class="hgi hgi-stroke hgi-search-01"></i></label>
-        <input type="text" name="fullname" id="fullname" class="p-2 bg-[#f8fafc] rounded border border-[#9DABBE] pl-10" placeholder="Search notes...">
+        <label for="search" class="absolute flex top-2 left-3 text-[#9DABBE]"><i class="hgi hgi-stroke hgi-search-01"></i></label>
+        <input type="text" name="search" id="search" class="p-2 bg-[#f8fafc] rounded border border-[#9DABBE] pl-10" placeholder="Search notes...">
       </div>
     </form>
 
@@ -35,17 +41,7 @@
       <h2 class="uppercase text-[#9DABBE] font-bold">Recent</h2>
 
       <!-- notes holder -->
-      <div class="flex flex-col top-5 gap-5">
-        <?php for ($i = 0; $i < 10; $i++): ?>
-          <a href="./edit.php">
-            <div class="flex flex-col p-[20px] shadow-lg rounded-lg gap-2">
-              <h3 class="text-lg font-bold">Groceries for Mom</h3>
-              <p class="text-[#666D7C]">Milk Eggs, Breads, Organic Apples, Spinach, Greek Yogurt...</p>
-              <span class="text-[#9DABBE]">Oct 24, 2023</span>
-            </div>
-          </a>
-        <?php endfor; ?>
-      </div>
+      <div class="flex flex-col top-5 gap-5" id="notes-holder"></div>
     </div>
 
     <!-- // floating button -->
@@ -54,7 +50,43 @@
     </a>
 
   </div>
+  <script>
+    function query(s) {
+      return document.querySelector(s);
+    }
+    function createElement(name, attr = {}) {
+      return Object.assign(document.createElement(name), attr);
+    }
+    let notesHolder = query("#notes-holder");
+    let timeoutId;
+    let searchInput = query("#search");
 
+    async function updateNotes(search = '') {
+      let url = "/get-notes.php?id=<?= $_SESSION['login'] ?>";
+      if(search !== '') url += `&s=${search}`;
+      let res = await fetch(url);
+      let notes = await res.json();
+      notesHolder.innerHTML = "";
+      notes.forEach(note => {
+        let item = createElement('a', {
+          href: `/edit.php?id=${note.id}`,
+          innerHTML: `<div class="flex flex-col p-[20px] shadow-lg rounded-lg gap-2">
+              <h3 class="text-lg font-bold">${note.title}</h3>
+              <p class="text-[#666D7C]">${note.content}</p>
+              <span class="text-[#9DABBE]">${note.created_at}</span>
+            </div>`
+        });
+        notesHolder.appendChild(item);
+      });
+    }
+    updateNotes();
+
+    searchInput.oninput = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        updateNotes(searchInput.value);
+      }, 500);
+    }
+  </script>
 </body>
-
 </html>

@@ -1,6 +1,10 @@
+<?php
+require 'config.php';
+
+if(has_login()) exit;
+?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,7 +28,7 @@
     </div>
 
     <!-- // form section -->
-    <form action="./index.php" method="post" class="flex flex-col gap-4 mt-6">
+    <form action="./action-register.php" method="post" class="flex flex-col gap-4 mt-6">
         <div class="flex flex-col gap-2">
           <label for="fullname">Fullname</label>
           <input type="text" name="fullname" id="fullname" class="p-2 bg-[#f8fafc] rounded border border-[#9DABBE]" placeholder="Enter your fullname">
